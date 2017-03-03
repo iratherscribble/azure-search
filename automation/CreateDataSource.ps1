@@ -16,7 +16,7 @@
  Import-Module (Join-Path (Join-Path $PSScriptRoot "lib") "DataSource.psm1") -DisableNameChecking
  Import-Module (Join-Path (Join-Path $PSScriptRoot "lib") "Definition.psm1") -DisableNameChecking
 
- $ErrorActionPreference = "Stop"
+ $ErrorActionPreference = 'Continue'
 
  Set-Credentials $serviceName $serviceKey
   
@@ -24,8 +24,16 @@
 
  $credentials = @{ "connectionString" = $connectionString }
  $definition.credentials = $credentials
+ 
+ try
+ {
+    $dataSource = Get-DataSource $definition.name
+ }
+ catch [System.Net.WebException]
+ {
+    $dataSource = $null
+ }
 
- $dataSource = Get-DataSource $definition.name
  if ($dataSource -ne $null)
  {
     Delete-DataSource $definition.name

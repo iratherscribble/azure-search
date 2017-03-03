@@ -13,13 +13,21 @@
  Import-Module (Join-Path (Join-Path $PSScriptRoot "lib") "Index.psm1") -DisableNameChecking
  Import-Module (Join-Path (Join-Path $PSScriptRoot "lib") "Definition.psm1") -DisableNameChecking
 
- $ErrorActionPreference = "Stop"
+ $ErrorActionPreference = 'Continue'
 
  Set-Credentials $serviceName $serviceKey
   
  $definition = Get-Definition $definitionName
 
- $index = Get-Index $definition.name
+ try
+ {
+    $index = Get-Index $definition.name
+ }
+ catch [System.Net.WebException]
+ {
+    $index = $null
+ }
+
  if ($index -ne $null)
  {
     Delete-Index $definition.name
